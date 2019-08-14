@@ -4,6 +4,7 @@ import numpy as np  # Handling data
 import time
 import os, sys
 from imutils import face_utils
+from PIL import Image, ImageDraw
 import dlib
 from pubnub.callbacks import SubscribeCallback
 from pubnub.pnconfiguration import PNConfiguration
@@ -214,7 +215,7 @@ while (True):
         # Find all the faces and face encodings in the current frame of video
         face_locations = face_recognition.face_locations(rgb_small_frame)
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
-        face_landmarks_list = face_recognition.face_landmarks(rgb_small_frame, face_locations)
+        face_landmarks_list = face_recognition.face_landmarks(frame)
         face_names = []
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
@@ -240,14 +241,30 @@ while (True):
                 flag = 1
                 # Alert()
 
-    process_this_frame = not process_this_frame
+    process_this_frame = True
 
     for (i, rect) in enumerate(rects):
         shape = predictor(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), rect)
         shape = face_utils.shape_to_np(shape)
-
-        for (x,y) in shape:
-            cv2.circle(frame, (x,y), 2, (0,255,0), -1)
+        #print(shape)
+        jaw = shape[1:17]
+        nose1 = shape[28:31]
+        nose2 = shape[32:36]
+        eyebrow1 = shape[18:22]
+        eyebrow2 = shape[23:27]
+        eye1 = shape[37:42]
+        eye2 = shape[43:48]
+        mouth = shape[49:68]
+        for (x, y) in shape:
+            cv2.circle(frame, (x, y), 1, (255,255,255), -1)
+            #cv2.drawContours(frame,[nose1],0,(255,255,255),1)
+            #cv2.drawContours(frame, [nose2], 0, (255, 255, 255), 1)
+            #cv2.drawContours(frame, [jaw], 0, (255, 255, 255), 1)
+            #cv2.drawContours(frame, [eye1], 0, (255, 255, 255), 1)
+            #cv2.drawContours(frame, [eye2], 0, (255, 255, 255), 1)
+            #cv2.drawContours(frame, [eyebrow1], 0, (255, 255, 255), 1)
+            #cv2.drawContours(frame, [eyebrow2], 0, (255, 255, 255), 1)
+            #cv2.drawContours(frame, [mouth], 0, (255, 255, 255), 1)
 
     # Display the results
     for (top, right, bottom, left), name in zip(face_locations, face_names):
@@ -256,15 +273,22 @@ while (True):
         right *= 4
         bottom *= 4
         left *= 4
-
+        if name != "Unknown":
         # Draw a box around the face
-        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+            cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
 
         # Draw a label with a name below the face
-        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-        font = cv2.FONT_HERSHEY_DUPLEX
-        cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+            cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
+            font = cv2.FONT_HERSHEY_DUPLEX
+            cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+        if name == "Unknown":
+            # Draw a box around the face
+            cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
+            # Draw a label with a name below the face
+            cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+            font = cv2.FONT_HERSHEY_DUPLEX
+            cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
     # Display the resulting image
     cv2.imshow('Video', frame)
 
