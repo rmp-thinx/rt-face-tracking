@@ -4,7 +4,7 @@ import numpy as np  # Handling data
 import time
 import os, sys
 from imutils import face_utils
-from PIL import Image, ImageDraw
+# from PIL import Image, ImageDraw
 import dlib
 from pubnub.callbacks import SubscribeCallback
 from pubnub.pnconfiguration import PNConfiguration
@@ -178,16 +178,29 @@ adam_face_encoding = face_recognition.face_encodings(adam_image)[0]
 justin_image = face_recognition.load_image_file("image2.jpeg")
 justin_face_encoding = face_recognition.face_encodings(justin_image)[0]
 
+jose_image = face_recognition.load_image_file("jose.jpeg")
+jose_face_encoding = face_recognition.face_encodings(jose_image)[0]
+
+helbert_image = face_recognition.load_image_file("helbert.jpeg")
+helbert_face_encoding = face_recognition.face_encodings(jose_image)[0]
+
+
+
 # Create arrays of known face encodings and their names
 known_face_encodings = [
+
     adam_face_encoding,
-    justin_face_encoding
+    justin_face_encoding,
+    jose_face_encoding,
+    helbert_face_encoding
 ]
 
 # Create Names for Sample Face encodings
 known_face_names = [
-    "rodri",
-    "sebas"
+    "Rodri",
+    "Sebas",
+    "Jose",
+    "Helbert"
 ]
 p = "shape_predictor_68_face_landmarks.dat"
 # Initialize some variables
